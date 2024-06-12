@@ -120,9 +120,9 @@
             Subir notas
         </x-nav-link>
         <x-nav-link
-            href="#" :active="request()->is('/materias')">
+            href="/estudiantes" :active="request()->is('estudiantes')">
             <svg class="bi me-2" width="16" height="16"><use xlink:href="#people-circle"/></svg>
-            Alumnos
+            Estudiantes
         </x-nav-link>
     </ul>
     <hr>

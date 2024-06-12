@@ -3,6 +3,8 @@
 namespace App\Imports;
 
 use App\Models\Nota;
+use App\Models\Materia;
+use App\Models\Estudiante;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
@@ -21,8 +23,20 @@ class NotasImport implements ToModel, WithHeadingRow
 
     protected $registrosBorrados = [];
 
+    protected $registrosInvalidos = [];
+
     public function model(array $row)
     {
+
+        if(!$this->validateForeignKeys($row)){
+            $this->registrosInvalidos[] = $row;
+            return null;
+        }
+
+        /* if(!$this->validarNotas($row)){
+            $this->registrosInvalidos[] = $row;
+            return null;
+        } */
 
         //verificamos duplicados
         $existingNota = $this->getIfExistsOnDb($row);
@@ -45,7 +59,9 @@ class NotasImport implements ToModel, WithHeadingRow
             else //si no hay duplicados retornamos objeto a insertar
         {
 
+
             $nota = new Nota($this->createNota($row));
+
             $nota->save();
 
             $this->registrosCreados[] = $nota->id;
@@ -54,6 +70,22 @@ class NotasImport implements ToModel, WithHeadingRow
 
         }
 
+    }
+
+    /* public function validarNotas(array $row){
+        for($i = 1 ; $i <= 10; $i++){
+            if(!is_numeric($row['nota_'.$i])){
+                return false;
+            }
+        }
+        return is_numeric($row['nota_final']);
+    } */
+
+    public function validateForeignKeys(array $row)
+    {
+        $estudianteExists = Estudiante::find($row['codigo_estudiante']);
+        $materiaExists = Materia::find($row['id_materia']);
+        return $estudianteExists && $materiaExists;
     }
 
 
@@ -125,6 +157,11 @@ class NotasImport implements ToModel, WithHeadingRow
     public function getProcessedRecords()
     {
         return $this->registrosProcesados;
+    }
+
+    public function getInvalidRecords()
+    {
+        return $this->registrosInvalidos;
     }
 
 }

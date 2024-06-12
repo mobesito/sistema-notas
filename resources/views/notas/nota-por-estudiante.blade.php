@@ -1,13 +1,13 @@
 <x-layout>
     <x-slot:title>Sistema de notas</x-slot:title>
-    <x-slot:heading>Notas de {{$materia->nombre_materia}}</x-slot:heading>
-    @isset($notasDeMateria)
-    <a href="/materias">Volver</a>
+    <x-slot:heading>Notas de {{$estudiante->nombre}} {{$estudiante->apellido}} - id: {{$estudiante->id}}</x-slot:heading>
+    @isset($notasDeEstudiante)
+    <a href="/estudiantes">Volver</a>
     <table class="table table-striped">
         <thead>
           <tr>
-            <th scope="col">#id estudiante</th>
-            <th scope="col">Nombre</th>
+            <th scope="col">#id materia</th>
+            <th scope="col">Materia</th>
             <th scope="col">Nota 1</th>
             <th scope="col">Nota 2</th>
             <th scope="col">Nota 3</th>
@@ -22,10 +22,10 @@
           </tr>
         </thead>
         <tbody>
-          @foreach ($notasDeMateria as $nota)
+          @foreach ($notasDeEstudiante as $nota)
               <tr>
-                  <th scope="row">{{$nota->estudiante->id}}</th>
-                  <td>{{$nota->estudiante->nombre}} {{$nota->estudiante->apellido}}</td>
+                  <th scope="row">{{$nota->materia->id}}</th>
+                  <td>{{$nota->materia->nombre_materia}}</td>
                   <td>{{$nota->nota_1}}</td>
                   <td>{{$nota->nota_2}}</td>
                   <td>{{$nota->nota_3}}</td>

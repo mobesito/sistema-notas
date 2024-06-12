@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Materia;
 use App\Models\Nota;
+use App\Models\Materia;
+use App\Models\Estudiante;
 use App\Imports\NotasImport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -18,16 +19,17 @@ class NotasController extends Controller
 
     public function import(Request $request)
     {
-        $response = '';
 
         $import = new NotasImport();
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv',
         ]);
+
         $file = $request->file('file');
         Excel::import($import, $file);
 
-        $processedRecords = $import->getProcessedRecords();
+        //DELETE PROCESS, CURRENTLY DISABLED
+       /*  $processedRecords = $import->getProcessedRecords();
         $existingRecords = Nota::all()->pluck('id')->toArray();
 
         $recordsToDelete = array_diff($existingRecords, $processedRecords);
@@ -38,25 +40,33 @@ class NotasController extends Controller
             return view('index', [
                 'response' => $response
             ]);
-        }
-
+        } */
+        $invalidRecords = $import->getInvalidRecords();
         $updatedRecords = $import->getUpdatedRecords();
         $createdRecords = $import->getCreatedRecords();
 
-        if($updatedRecords){
-            $response = 'registro/s actualizado/s';
+
+        if($invalidRecords){
+            $error_message = 'estudiante o materia no encontrada';
             return view('index', [
-                'response' => $response
+                'error_message' => $error_message,
+                /* 'error' => $invalidRecords */
+            ]);
+        }
+        if($updatedRecords){
+            $success = 'registro/s actualizado/s';
+            return view('index', [
+                'success' => $success
             ]);
         }elseif($createdRecords){
-            $response = 'registro/s creado/s';
+            $success = 'registro/s creado/s';
             return view('index', [
-                'response' => $response
+                'success' => $success
             ]);
         }else{
-            $response = 'El archivo no tenía cambios con respecto a la base de datos...';
+            $info_message = 'El archivo no tenía cambios con respecto a la base de datos...';
             return view('index', [
-                'response' => $response
+                'info_message' => $info_message
             ]);
         }
 
@@ -69,6 +79,17 @@ class NotasController extends Controller
         return view('notas.nota-por-materia', [
             'notasDeMateria' => $notasdeMateria,
             'materia' => $materia
+        ]);
+    }
+
+    public function notasDeEstudiante(Estudiante $estudiante)
+    {
+       // dd($estudiante);
+        if(!$estudiante) abort('404');
+        $notasDeEstudiante = Nota::with('materia')->where('estudiante_id', $estudiante->id)->get();
+        return view('notas.nota-por-estudiante', [
+            'notasDeEstudiante' => $notasDeEstudiante,
+            'estudiante' => $estudiante
         ]);
     }
 
