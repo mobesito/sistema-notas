@@ -28,15 +28,10 @@ class NotasImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
 
-        if(!$this->validateForeignKeys($row)){
+        if($this->validateForeignKeys($row) == false){
             $this->registrosInvalidos[] = $row;
             return null;
         }
-
-        /* if(!$this->validarNotas($row)){
-            $this->registrosInvalidos[] = $row;
-            return null;
-        } */
 
         //verificamos duplicados
         $existingNota = $this->getIfExistsOnDb($row);
@@ -54,32 +49,18 @@ class NotasImport implements ToModel, WithHeadingRow
             }
             $this->registrosProcesados[] = $existingNota->id;
             return null;
-
         }
             else //si no hay duplicados retornamos objeto a insertar
         {
-
-
             $nota = new Nota($this->createNota($row));
-
             $nota->save();
-
             $this->registrosCreados[] = $nota->id;
             $this->registrosProcesados[] = $nota->id;
             return $nota;
-
         }
 
     }
 
-    /* public function validarNotas(array $row){
-        for($i = 1 ; $i <= 10; $i++){
-            if(!is_numeric($row['nota_'.$i])){
-                return false;
-            }
-        }
-        return is_numeric($row['nota_final']);
-    } */
 
     public function validateForeignKeys(array $row)
     {
@@ -94,7 +75,6 @@ class NotasImport implements ToModel, WithHeadingRow
         ->where('materia_id', $row['id_materia'])
         ->first();
     }
-
 
 
     public function createNota(array $row){
@@ -115,7 +95,6 @@ class NotasImport implements ToModel, WithHeadingRow
 
         ];
     }
-
 
 
     public function getExcelRecords(array $row){

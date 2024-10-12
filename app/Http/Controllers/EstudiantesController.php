@@ -13,4 +13,21 @@ class EstudiantesController extends Controller
             'estudiantes' => $estudiantes
         ]);
     }
+
+    public function estudiantasAgregar(){
+        if(request()->isMethod('GET')){
+            return view('estudiantes.agregar');
+        }else if(request()->isMethod('POST')){
+            $estudiante = new Estudiante();
+            $estudiante->nombre = request('nombre');
+            $estudiante->apellido = request('apellido');
+            if($estudiante->save()){
+                $response = ['estado' => 'exito', 'mensaje' => 'Estudiante agregado con éxito!'];
+            }else{
+                $response = ['estado' => 'error', 'mensaje' => 'Ocurrió un error agregando el estudiante'];
+            }
+
+            return response()->json($response);
+        }
+    }
 }
