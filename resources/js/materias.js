@@ -6,32 +6,17 @@ import 'datatables.net-dt/css/dataTables.dataTables.css';
 import 'datatables.net';
 
 $(document).ready(function(){
-    $("#tabla_estudiantes").DataTable({
-        responsive: true,
-        language: {
-            "lengthMenu": "Mostrar _MENU_ entradas por página",
-            "zeroRecords": "No se encontraron resultados",
-            "info": "Mostrando página _PAGE_ de _PAGES_",
-            "infoEmpty": "No hay registros disponibles",
-            "infoFiltered": "(filtrado de _MAX_ registros totales)",
-            "search": "Buscar:",
-            "emptyTable": "No hay datos disponibles en la tabla",
-            "loadingRecords": "Cargando...",
-            "processing": "Procesando..."
-        }
-    });
-
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
 
-    $("#frmAgregarEstudiante").on("submit", function(e){
+    $("#frmAgregarMateria").on("submit", function(e){
         e.preventDefault();
-        let data = new FormData(document.getElementById("frmAgregarEstudiante"));
+        let data = new FormData(document.getElementById("frmAgregarMateria"));
         $.ajax({
-            url: "/estudiantes/agregar",
+            url: "/materias/agregar",
             type: 'POST',
             data: data,
             cache: false,
@@ -47,14 +32,14 @@ $(document).ready(function(){
                         confirmButtonText: 'Aceptar'
                     }).then((result) => {
                         if (result.isConfirmed || result.isDismissed) {
-                            window.location.href = "/estudiantes";
+                            window.location.href = "/materias";
                         }
                     });
                 }
                 else{
                     Swal.fire({
                         title: 'Ups',
-                        text: 'Ocurrió un problema agregando el estudiante',
+                        text: 'Ocurrió un problema agregando la materia',
                         icon: 'error',
                         confirmButtonText: 'Aceptar'
                    });
@@ -71,13 +56,13 @@ $(document).ready(function(){
         });
     });
 
-    $("#frmEditarEstudiante").on("submit", function(e){
+    $("#frmEditarMateria").on("submit", function(e){
         e.preventDefault();
-        let data = new FormData(document.getElementById("frmEditarEstudiante"));
-        let id = data.get("id");
+        let data = new FormData(document.getElementById("frmEditarMateria"));
+        const id = data.get("id");
         $.ajax({
-            url: `/estudiantes/editar/${id}`,
-            type: "POST",
+            url: `/materias/editar/${id}`,
+            type: 'POST',
             data: data,
             cache: false,
             contentType: false,
@@ -86,31 +71,31 @@ $(document).ready(function(){
             success: function(response) {
                 if(response.estado === "exito"){
                     Swal.fire({
-                        title: "Éxito",
+                        title: 'Éxito',
                         text: response.mensaje,
-                        icon: "success",
-                        confirmButtonText: "Aceptar"
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
                     }).then((result) => {
                         if (result.isConfirmed || result.isDismissed) {
-                            window.location.href = "/estudiantes";
+                            window.location.href = "/materias";
                         }
                     });
                 }
                 else{
                     Swal.fire({
-                        title: "Ups",
-                        text: "Ocurrió un problema agregando el estudiante",
-                        icon: "error",
-                        confirmButtonText: "Aceptar"
+                        title: 'Ups',
+                        text: 'Ocurrió un problema editando la materia',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
                    });
                 }
             },
             error: function(xhr) {
                 Swal.fire({
-                    title: "Error!",
+                    title: 'Error!',
                     text: xhr.responseText,
-                    icon: "error",
-                    confirmButtonText: "Aceptar"
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
                 });
             }
         });
@@ -129,7 +114,7 @@ $(document).ready(function(){
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: `/estudiantes/eliminar/${id}`,
+                    url: `/materias/eliminar/${id}`,
                     type: 'POST',
                     data: {
                         _method: 'DELETE'
@@ -141,10 +126,10 @@ $(document).ready(function(){
                                 response.mensaje,
                                 'success'
                             ).then(() => {
-                                window.location.href = "/estudiantes";
+                                window.location.href = "/materias";
                             });
                         } else {
-                            Swal.fire('Ups', 'Ocurrió un problema eliminando el ítem', 'error');
+                            Swal.fire('Ups', response.mensaje, 'error');
                         }
                     },
                     error: function(xhr) {

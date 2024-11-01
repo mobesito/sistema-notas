@@ -10,7 +10,12 @@ use App\Http\Controllers\Index;
 Route::get('/', [Index::class, 'index']);
 
 //materia
-Route::get('/materias', [MateriasController::class, 'index']);
+Route::get('/materias', [MateriasController::class, 'index'])->name('listarMaterias');
+Route::match(['GET','POST'],'/materias/agregar', [MateriasController::class,'materiasAgregar'])->name('materiasAgregar');
+Route::match(['GET','POST'],'/materias/editar/{materia}', [MateriasController::class,'materiasEditar'])->name('materiasEditar');
+Route::delete('/materias/eliminar/{materia}', [MateriasController::class,'materiasEliminar'])->name('materiasEliminar');
+
+
 
 //notas
 Route::get('/notas/create', [NotasController::class, 'create']);
@@ -20,7 +25,12 @@ Route::get('/estudiantes/notas/{estudiante}', [NotasController::class, 'notasDeE
 
 //estudiantes
 Route::get('/estudiantes', [EstudiantesController::class, 'index'])->name('listarEstudiantes');
-Route::match(['GET', 'POST'], 'estudiantes/agregar', [EstudiantesController::class, 'estudiantasAgregar'])->name('estudiantasAgregar');
+Route::match(['GET', 'POST'], 'estudiantes/agregar', [EstudiantesController::class, 'estudiantesAgregar'])->name('estudiantesAgregar');
+Route::match(['GET', 'POST'], '/estudiantes/editar/{estudiante}', [EstudiantesController::class,'estudiantesEditar'])->name('estudiantesEditar');
+Route::delete('/estudiantes/eliminar/{estudiante}', [EstudiantesController::class,'estudiantesEliminar'])->name('estudiantesEliminar');
 
+//reportes pdf
+Route::get('/estudiantes/notas/{estudiante}/pdf', [NotasController::class, 'notasDeEstudiantePDF'])->name('notasDeEstudiantePDF');
+Route::get('/materias/notas/{materia}/pdf', [NotasController::class, 'notasDeMateriaPDF'])->name('notasDeMateriaPDF');
 
 

@@ -7,6 +7,8 @@ use App\Models\Materia;
 use App\Models\Estudiante;
 use App\Imports\NotasImport;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\App;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
 
@@ -85,12 +87,26 @@ class NotasController extends Controller
         return view('notas.nota-por-materia', ['notasDeMateria' => $notasdeMateria, 'materia' => $materia]);
     }
 
+    public function notasDeMateriaPDF(Materia $materia){
+        if(!$materia) abort('404');
+        $notasDeMateria = Nota::with('estudiante')->where('materia_id', $materia->id)->get();
+        $pdf = Pdf::loadView('pdf.notas-materia', compact('notasDeMateria', 'materia'));
+        return $pdf->stream();
+    }
+
     public function notasDeEstudiante(Estudiante $estudiante)
     {
-       // dd($estudiante);
         if(!$estudiante) abort('404');
         $notasDeEstudiante = Nota::with('materia')->where('estudiante_id', $estudiante->id)->get();
         return view('notas.nota-por-estudiante', ['notasDeEstudiante' => $notasDeEstudiante, 'estudiante' => $estudiante]);
+    }
+
+    public function notasDeEstudiantePDF(Estudiante $estudiante)
+    {
+        if(!$estudiante) abort('404');
+        $notasDeEstudiante = Nota::with('materia')->where('estudiante_id', $estudiante->id)->get();
+        $pdf = Pdf::loadView('pdf.notas-estudiante', compact('notasDeEstudiante', 'estudiante'));
+        return $pdf->stream();
     }
 
 }

@@ -78,6 +78,16 @@ class NotasImport implements ToModel, WithHeadingRow
 
 
     public function createNota(array $row){
+        $todasLasNotas = true;
+        $notaFinal = 0;
+        foreach (range(1, 10) as $i) {
+            $notaFinal += $row['nota_'.$i];
+            if (!isset($row['nota_'.$i]) || $row['nota_'.$i] === null) {
+                $todasLasNotas = false;
+                break;
+            }
+        }
+        $notaFinal = $notaFinal / 10;
         return [
             'estudiante_id' => $row['codigo_estudiante'],
             'materia_id' => $row['id_materia'],
@@ -91,13 +101,22 @@ class NotasImport implements ToModel, WithHeadingRow
             'nota_8' => $row['nota_8'],
             'nota_9' => $row['nota_9'],
             'nota_10' => $row['nota_10'],
-            'nota_final' => $row['nota_final'],
-
+            'nota_final' => $todasLasNotas ? $notaFinal : $row['nota_final']
         ];
     }
 
 
     public function getExcelRecords(array $row){
+        $todasLasNotas = true;
+        $notaFinal = 0;
+        foreach (range(1, 10) as $i) {
+            $notaFinal += $row['nota_'.$i];
+            if (!isset($row['nota_'.$i]) || $row['nota_'.$i] === null) {
+                $todasLasNotas = false;
+                break;
+            }
+        }
+        $notaFinal = $notaFinal / 10;
         return [
             'nota_1' => $row['nota_1'],
             'nota_2' => $row['nota_2'],
@@ -109,7 +128,7 @@ class NotasImport implements ToModel, WithHeadingRow
             'nota_8' => $row['nota_8'],
             'nota_9' => $row['nota_9'],
             'nota_10' => $row['nota_10'],
-            'nota_final' => $row['nota_final'],
+            'nota_final' => $todasLasNotas ? $notaFinal : $row['nota_final']
         ];
     }
 
