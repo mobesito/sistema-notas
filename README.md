@@ -28,6 +28,7 @@ Instrucciones Sistema-notas
 
 > npm install
 
-7.php artisan key:generate
-8.correr proyecto en modo dev
+7. php artisan key:generate
+
+8. correr proyecto en modo dev
 >npm run dev
